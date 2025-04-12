@@ -10,7 +10,7 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ('title', 'date', 'location', 'organizer')
-    list_filter = ('category', 'date')
+    list_filter = ('categories', 'date')
     search_fields = ('title', 'description')
 
 

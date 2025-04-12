@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<h1>Личный кабинет</h1>
+<section>
+    <h2>Мероприятия, созданные мною</h2>
+    {% if organized_events %}
+        <ul>
+            {% for event in organized_events %}
+            <li>
+                <a href="{% url 'event_detail' event.id %}">{{ event.title }}</a>
+                <br>
+                <small class="text-mured">{{ event.date|date:"d M Y H:i" }}</small>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Вы еще не создали ни одного мероприятия</p>
+    {% endif %}
+</section>
+
+<section class="mt-4">
+  <h2>Мероприятия, в которых я участвую</h2>
+  {% if participations %}
+    <ul class="list-group">
+      {% for participation in participations %}
+      <li class="list-group-item">
+        <a href="{% url 'event_detail' participation.event.id %}">{{ participation.event.title }}</a>
+        <br>
+        <small class="text-muted">{{ participation.event.date|date:"d M Y H:i" }}</small>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Вы не зарегистрированы ни на одно мероприятие.</p>
+  {% endif %}
+</section>
+{% endblock %}
+

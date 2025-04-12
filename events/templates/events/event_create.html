@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Создать мероприятие{% endblock %}
+
+{% block content %}
+<h1>Создать мероприятие</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-group">
+        <label for="id_extra_images">Дополнительные изображения (выберите несколько):</label>
+        <input type="file" name="extra_images" id="id_extra_images" multiple class="form-control-file">
+    </div>
+    <button type="submit" class="btn btn-primary">Создать</button>
+</form>
+{% endblock %}

@@ -130,5 +130,11 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL = 'events.User'
+
+LOGIN_REDIRECT_URL = 'event_list'  # можно указать, например, 'event_list' или другой URL, например, '/'
+LOGOUT_REDIRECT_URL = 'event_list'  # или другой URL, например, '/'
+
