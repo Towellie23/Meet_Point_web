@@ -37,3 +37,34 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['text']
+        widgets = {
+            'text': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 3,
+                    'placeholder': 'Оставьте ваш комментарий...'
+                }
+            )
+        }
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['text', 'rating']
+        widgets = {
+            'text': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 3,
+                    'placeholder': 'Оставьте ваш отзыв...'
+                }
+            ),
+            'rating': forms.Select(
+                attrs={'class': 'form-control'},
+                choices=[(i, i) for i in range(1, 6)]
+            ),
+        }
+        labels = {
+            'text': 'Отзыв',
+            'rating': 'Оценка (от 1 до 5)',
+        }

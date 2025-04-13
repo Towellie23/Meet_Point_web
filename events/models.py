@@ -34,6 +34,7 @@ class Event(models.Model):
     headline_image = models.ImageField(upload_to='event_images/', verbose_name='Заглавное изображение', null=True, \
                                        blank=True)
     participant_limit = models.PositiveIntegerField(verbose_name='Лимит участников', null=True, blank=True)
+    is_finished = models.BooleanField(default=False, verbose_name='Завершено')
 
     def __str__(self):
         return self.title

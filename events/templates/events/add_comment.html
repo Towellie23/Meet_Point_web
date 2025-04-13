@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавить комментарий{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Добавить комментарий для мероприятия: {{ event.title }}</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Отправить</button>
+        <a href="{% url 'event_detail' event.id %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}
