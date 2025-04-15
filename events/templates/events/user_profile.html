@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль пользователя: {{ organizer.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <!-- Карточка профиля -->
+  <div class="card mb-4">
+    <div class="card-body text-center">
+      <!-- Если у пользователя есть аватар, его можно вывести, иначе placeholder -->
+      <img src="{{ organizer.profile.avatar.url|default:'https://via.placeholder.com/150' }}" class="rounded-circle mb-3" alt="Avatar" width="150" height="150">
+      <h3>{{ organizer.username }}</h3>
+      {% if organizer.first_name or organizer.last_name %}
+        <p class="mb-1">{{ organizer.first_name }} {{ organizer.last_name }}</p>
+      {% endif %}
+      <!-- Дополнительная информация: email, ссылки на соцсети и т.д. -->
+      <p class="text-muted">{{ organizer.email }}</p>
+    </div>
+  </div>
+
+  <!-- Вкладки с информацией -->
+  <ul class="nav nav-tabs" id="profileTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" id="organized-tab" data-toggle="tab" href="#organized" role="tab" aria-controls="organized" aria-selected="true">Организованные мероприятия</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="participations-tab" data-toggle="tab" href="#participations" role="tab" aria-controls="participations" aria-selected="false">Участия</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="comments-tab" data-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="false">Комментарии</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Отзывы</a>
+    </li>
+  </ul>
+
+  <div class="tab-content mt-3" id="profileTabContent">
+    <!-- Организованные мероприятия -->
+    <div class="tab-pane fade show active" id="organized" role="tabpanel" aria-labelledby="organized-tab">
+      {% if organized_events %}
+        <div class="list-group">
+          {% for event in organized_events %}
+            <a href="{% url 'event_detail' event.id %}" class="list-group-item list-group-item-action">
+              <h5 class="mb-1">{{ event.title }}</h5>
+              <small class="text-muted">{{ event.date|date:"d M Y, H:i" }}</small>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>Нет организованных мероприятий.</p>
+      {% endif %}
+    </div>
+
+    <!-- Участия -->
+    <div class="tab-pane fade" id="participations" role="tabpanel" aria-labelledby="participations-tab">
+      {% if participations %}
+        <div class="list-group">
+          {% for participation in participations %}
+            <a href="{% url 'event_detail' participation.event.id %}" class="list-group-item list-group-item-action">
+              <h5 class="mb-1">{{ participation.event.title }}</h5>
+              <small class="text-muted">{{ participation.event.date|date:"d M Y, H:i" }}</small>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>Нет участий.</p>
+      {% endif %}
+    </div>
+
+    <!-- Комментарии -->
+    <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+      {% if comments %}
+        <ul class="list-group">
+          {% for comment in comments %}
+            <li class="list-group-item">
+              <p>{{ comment.text }}</p>
+              <small class="text-muted">{{ comment.created_at|date:"d M Y, H:i" }}</small>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Нет комментариев.</p>
+      {% endif %}
+    </div>
+
+    <!-- Отзывы -->
+    <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+      {% if reviews %}
+        <ul class="list-group">
+          {% for review in reviews %}
+            <li class="list-group-item">
+              <p><strong>Оценка: {{ review.rating }}</strong></p>
+              <p>{{ review.text }}</p>
+              <small class="text-muted">{{ review.created_at|date:"d M Y, H:i" }}</small>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Нет отзывов.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

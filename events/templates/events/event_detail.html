@@ -36,7 +36,7 @@
     <p><strong>Место встречи:</strong> {{ event.location }}</p>
     <p>
         <strong>Организатор:</strong>
-        <a href="{% url 'organizer_profile' event.organizer.id %}">
+        <a href="{% url 'user_profile' event.organizer.id %}">
         {{ event.organizer.username }}
         </a>
     </p>
@@ -91,7 +91,11 @@
       {% for review in event.reviews.all|dictsortreversed:"created_at" %}
          <div class="card mb-2">
            <div class="card-body">
-             <strong>{{ review.user.username }}</strong> &mdash; оценка: <strong>{{ review.rating }}</strong><br>
+             <strong>
+                 <a href="{% url 'user_profile' review.user.id %}">
+                    {{ review.user.username }}
+                 </a>
+             </strong> &mdash; оценка: <strong>{{ review.rating }}</strong><br>
              <p>{{ review.text }}</p>
              <small class="text-muted">{{ review.created_at|date:"d M Y, H:i" }}</small>
            </div>
@@ -112,7 +116,11 @@
 {% if event.comments.all %}
     {% for comment in event.comments.all|dictsortreversed:"created_at" %}
         <div class="alert alert-secondary">
-            <strong>{{ comment.user.username }}</strong>
+            <strong>
+                <a href="{% url 'user_profile' comment.user.id %}">
+                    {{ comment.user.username }}
+                </a>
+            </strong>
             <small class="text-muted">{{ comment.created_at|date:"d M Y, H:i" }}</small>
             <p>{{ comment.text }}</p>
         </div>

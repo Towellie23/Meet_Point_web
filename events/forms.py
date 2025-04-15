@@ -32,7 +32,6 @@ class EventForm(forms.ModelForm):
         model = Event
         fields = ['title', 'description', 'date', 'location', 'categories', 'headline_image', 'participant_limit']
 
-
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
@@ -67,4 +66,20 @@ class ReviewForm(forms.ModelForm):
         labels = {
             'text': 'Отзыв',
             'rating': 'Оценка (от 1 до 5)',
+        }
+
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['text']
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Введите ваше сообщение...'
+            })
+        }
+        labels = {
+            'text': ''
         }

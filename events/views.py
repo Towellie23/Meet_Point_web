@@ -42,7 +42,7 @@ def event_list(request):
 
     return render(request, 'events/event_list.html', {'events': events, 'categories': categories,
                                                       'selected_categories': selected_categories,
-                                                      'page_obj': page_obj,})
+                                                      'page_obj': page_obj, })
 
 
 def event_detail(request, event_id):
@@ -60,9 +60,9 @@ def event_detail(request, event_id):
                                                         'comments': comments, 'comment_form': comment_form,
                                                         'is_favorite': is_favorite})
 
+
 @login_required
 def event_create(request):
-
     if request.method == 'POST':
         form = EventForm(request.POST, request.FILES)
         if form.is_valid():
@@ -110,7 +110,6 @@ def participate_event(request, event_id):
 
 
 def registration(request):
-
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
@@ -134,7 +133,8 @@ def my_account(request):
                                                       'participations': participations,
                                                       'active_events': active_events,
                                                       'finished_events': finished_events,
-                                                      'favorite_events': favorite_events,})
+                                                      'favorite_events': favorite_events, })
+
 
 @login_required
 def add_comment(request, event_id):
@@ -156,7 +156,6 @@ def add_comment(request, event_id):
 
 @login_required
 def add_review(request, event_id):
-
     event = get_object_or_404(Event, pk=event_id)
 
     if request.method == 'POST':
@@ -215,9 +214,10 @@ def organizer_profile(request, organizer_id):
 
     active_events = Event.objects.filter(organizer=organizer, is_finished=False).order_by('date')
     finished_events = Event.objects.filter(organizer=organizer, is_finished=True).order_by('date')
-    return render(request, 'events/organizer_profile.html', {'organizer': organizer,
-                                                             'active_events': active_events,
-                                                             'finished_events': finished_events})
+    return render(request, 'events/user_profile.html', {'organizer': organizer,
+                                                        'active_events': active_events,
+                                                        'finished_events': finished_events})
+
 
 @login_required
 def toggle_favorite(request, event_id):
@@ -227,4 +227,3 @@ def toggle_favorite(request, event_id):
         # Если объект уже существует, удаляем его
         favorite.delete()
     return redirect('event_detail', event_id=event.id)
-

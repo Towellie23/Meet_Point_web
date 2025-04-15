@@ -3,84 +3,121 @@
 {% block title %}Личный кабинет{% endblock %}
 
 {% block content %}
+
+
 <div class="container mt-4">
-  <h1>Личный кабинет пользователя {{ user.username }}</h1>
+    <h1 class="mb-4">Личный кабинет пользователя {{ user.username }}</h1>
 
-  <h2>Избранные мероприятия</h2>
-  {% if favorite_events %}
-    <div class="list-group">
-      {% for event in favorite_events %}
-        <a href="{% url 'event_detail' event.id %}" class="list-group-item list-group-item-action">
-          <h5 class="mb-1">{{ event.title }}</h5>
-          <small>{{ event.date|date:"d M Y, H:i" }}</small>
-        </a>
-      {% endfor %}
+    <!-- Блок вкладок -->
+    <ul class="nav nav-tabs" id="myAccountTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="organized-tab" data-toggle="tab" href="#organized" role="tab" aria-controls="organized" aria-selected="true">
+                Организованные мероприятия
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="participations-tab" data-toggle="tab" href="#participations" role="tab" aria-controls="participations" aria-selected="false">
+                Участия
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="active-tab" data-toggle="tab" href="#active" role="tab" aria-controls="active" aria-selected="false">
+                Активные мероприятия
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="finished-tab" data-toggle="tab" href="#finished" role="tab" aria-controls="finished" aria-selected="false">
+                Завершенные мероприятия
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="favorites-tab" data-toggle="tab" href="#favorites" role="tab" aria-controls="favorites" aria-selected="false">
+                Избранное
+            </a>
+        </li>
+    </ul>
+
+    <!-- Контейнер вкладок -->
+    <div class="tab-content mt-3" id="myAccountTabContent">
+        <!-- Организованные мероприятия -->
+        <div class="tab-pane fade show active" id="organized" role="tabpanel" aria-labelledby="organized-tab">
+            {% if organized_events %}
+                <div class="list-group">
+                    {% for event in organized_events %}
+                        <a href="{% url 'event_detail' event.id %}" class="list-group-item list-group-item-action">
+                            <h5 class="mb-1">{{ event.title }}</h5>
+                            <small>{{ event.date|date:"d M Y, H:i" }}</small>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>У вас нет организованных мероприятий.</p>
+            {% endif %}
+        </div>
+
+        <!-- Участия -->
+        <div class="tab-pane fade" id="participations" role="tabpanel" aria-labelledby="participations-tab">
+            {% if participations %}
+                <div class="list-group">
+                    {% for participation in participations %}
+                        <a href="{% url 'event_detail' participation.event.id %}" class="list-group-item list-group-item-action">
+                            <h5 class="mb-1">{{ participation.event.title }}</h5>
+                            <small>{{ participation.event.date|date:"d M Y, H:i" }}</small>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Вы еще не зарегистрированы на мероприятия.</p>
+            {% endif %}
+        </div>
+
+        <!-- Активные мероприятия -->
+        <div class="tab-pane fade" id="active" role="tabpanel" aria-labelledby="active-tab">
+            {% if active_events %}
+                <div class="list-group">
+                    {% for event in active_events %}
+                        <a href="{% url 'event_detail' event.id %}" class="list-group-item list-group-item-action">
+                            <h5 class="mb-1">{{ event.title }}</h5>
+                            <small>{{ event.date|date:"d M Y, H:i" }}</small>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Нет активных мероприятий.</p>
+            {% endif %}
+        </div>
+
+        <!-- Завершенные мероприятия -->
+        <div class="tab-pane fade" id="finished" role="tabpanel" aria-labelledby="finished-tab">
+            {% if finished_events %}
+                <div class="list-group">
+                    {% for event in finished_events %}
+                        <a href="{% url 'event_detail' event.id %}" class="list-group-item list-group-item-action">
+                            <h5 class="mb-1">{{ event.title }}</h5>
+                            <small>{{ event.date|date:"d M Y, H:i" }}</small>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>У вас нет завершенных мероприятий.</p>
+            {% endif %}
+        </div>
+
+        <!-- Избранное -->
+        <div class="tab-pane fade" id="favorites" role="tabpanel" aria-labelledby="favorites-tab">
+            {% if favorite_events %}
+                <div class="list-group">
+                    {% for event in favorite_events %}
+                        <a href="{% url 'event_detail' event.id %}" class="list-group-item list-group-item-action">
+                            <h5 class="mb-1">{{ event.title }}</h5>
+                            <small>{{ event.date|date:"d M Y, H:i" }}</small>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>У вас нет избранных мероприятий.</p>
+            {% endif %}
+        </div>
     </div>
-  {% else %}
-    <p>У вас нет избранных мероприятий.</p>
-  {% endif %}
-
-  <!-- Раздел с мероприятиями, организованными пользователем -->
-  <section class="mb-5">
-    <h2>Мои мероприятия</h2>
-
-    <!-- Активные мероприятия -->
-    <h3>Активные мероприятия</h3>
-    {% if active_events %}
-      <div class="list-group">
-        {% for event in active_events %}
-          <a href="{% url 'event_detail' event.id %}" class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">{{ event.title }}</h5>
-              <small>{{ event.date|date:"d M Y, H:i" }}</small>
-            </div>
-            <p class="mb-1">{{ event.description|truncatewords:25 }}</p>
-            <small class="text-success">Мероприятие активно</small>
-          </a>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>У вас пока нет активных мероприятий.</p>
-    {% endif %}
-
-    <!-- Завершенные мероприятия -->
-    <h3 class="mt-4">Завершенные мероприятия</h3>
-    {% if finished_events %}
-      <div class="list-group">
-        {% for event in finished_events %}
-          <a href="{% url 'event_detail' event.id %}" class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">{{ event.title }}</h5>
-              <small>{{ event.date|date:"d M Y, H:i" }}</small>
-            </div>
-            <p class="mb-1">{{ event.description|truncatewords:25 }}</p>
-            <small class="text-muted">Мероприятие завершено</small>
-          </a>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>У вас пока нет завершенных мероприятий.</p>
-    {% endif %}
-  </section>
-
-  <!-- Раздел с мероприятиями, в которых пользователь участвует -->
-  <section>
-    <h2>Мероприятия, в которых я участвую</h2>
-    {% if participations %}
-      <div class="list-group">
-        {% for participation in participations %}
-          <a href="{% url 'event_detail' participation.event.id %}" class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">{{ participation.event.title }}</h5>
-              <small>{{ participation.event.date|date:"d M Y, H:i" }}</small>
-            </div>
-            <p class="mb-1">{{ participation.event.description|truncatewords:25 }}</p>
-          </a>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>Вы не зарегистрированы ни на одно мероприятие.</p>
-    {% endif %}
-  </section>
 </div>
 {% endblock %}
