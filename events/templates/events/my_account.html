@@ -4,7 +4,21 @@
 
 {% block content %}
 <div class="container mt-4">
-  <h1>Личный кабинет</h1>
+  <h1>Личный кабинет пользователя {{ user.username }}</h1>
+
+  <h2>Избранные мероприятия</h2>
+  {% if favorite_events %}
+    <div class="list-group">
+      {% for event in favorite_events %}
+        <a href="{% url 'event_detail' event.id %}" class="list-group-item list-group-item-action">
+          <h5 class="mb-1">{{ event.title }}</h5>
+          <small>{{ event.date|date:"d M Y, H:i" }}</small>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>У вас нет избранных мероприятий.</p>
+  {% endif %}
 
   <!-- Раздел с мероприятиями, организованными пользователем -->
   <section class="mb-5">

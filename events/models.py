@@ -90,3 +90,24 @@ class Review(models.Model):
 
     def __str__(self):
         return f'Review by {self.user.username} for {self.event.title}'
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name='favorite_events',
+        verbose_name='Пользователь'
+    )
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE,
+        related_name='favorited_by',
+        verbose_name='Мероприятие'
+    )
+
+    class Meta:
+        unique_together = ('user', 'event')
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.event.title}"

@@ -7,6 +7,8 @@ from .forms import *
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
 from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
+from django.contrib import messages
 
 User = get_user_model()
 
@@ -17,7 +19,7 @@ def event_list(request):
     keyword = request.GET.get('search')
     date = request.GET.get('date')
     location = request.GET.get('location')
-
+    selected_categories = request.GET.getlist('categories')
     if keyword:
         events = events.filter(
             Q(title__icontains=keyword) |
@@ -34,18 +36,29 @@ def event_list(request):
     selected_categories = request.GET.getlist('categories')
     if selected_categories:
         events = events.filter(categories__id__in=selected_categories).distinct()
+    paginator = Paginator(events, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'events/event_list.html', {'events': events, 'categories': categories,
-                                                      'selected_categories': selected_categories})
+                                                      'selected_categories': selected_categories,
+                                                      'page_obj': page_obj,})
 
 
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     participants = event.participation_set.filter(status='registered')
     comments = event.comments.all().order_by('created_at')
+    reviews = event.reviews.all().order_by('-created_at')
     comment_form = CommentForm() if request.user.is_authenticated else None
+
+    is_favorite = False
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(user=request.user, event=event).exists()
+
     return render(request, 'events/event_detail.html', {'event': event, 'participants': participants,
-                                                        'comments': comments, 'comment_form': comment_form})
+                                                        'comments': comments, 'comment_form': comment_form,
+                                                        'is_favorite': is_favorite})
 
 @login_required
 def event_create(request):
@@ -65,21 +78,35 @@ def event_create(request):
         form = EventForm()
     return render(request, 'events/event_create.html', {'form': form})
 
+
 @login_required
 def participate_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
+    # Получаем или создаем запись участия
     participation, created = Participation.objects.get_or_create(user=request.user, event=event)
 
-    if not created:
-        if participation.status == 'registered':
-            participation.status = 'canceled'
-        else:
-            participation.status = 'registered'
+    # Если пользователь уже зарегистрирован, позволяйте ему отменить регистрацию
+    if participation.status == 'registered':
+        participation.status = 'canceled'
         participation.save()
+        messages.info(request, "Вы отменили регистрацию на мероприятие.")
     else:
+        # Если пользователь хочет зарегистрироваться, проверяем лимит участников.
+        # При этом, если его запись уже существует и имеет статус 'canceled',
+        # она не учитывается в подсчёте.
+        current_count = event.participation_set.filter(status='registered').count()
+        if event.participant_limit is not None and current_count >= event.participant_limit:
+            messages.error(request, "Регистрация закрыта. Достигнут лимит участников.")
+            # Если запись только что создана, удаляем её, чтобы не появлялась в списке
+            if created:
+                participation.delete()
+            return redirect('event_detail', event_id=event.id)
+
         participation.status = 'registered'
         participation.save()
-    return redirect('event_detail', event_id=event_id)
+        messages.success(request, "Вы успешно зарегистрировались на мероприятие.")
+
+    return redirect('event_detail', event_id=event.id)
 
 
 def registration(request):
@@ -102,10 +129,12 @@ def my_account(request):
     active_events = organized_events.filter(is_finished=False)
     finished_events = organized_events.filter(is_finished=True)
     participations = Participation.objects.filter(user=user, status='registered')
+    favorite_events = Event.objects.filter(favorited_by__user=user)
     return render(request, 'events/my_account.html', {'organized_events': organized_events,
                                                       'participations': participations,
                                                       'active_events': active_events,
-                                                      'finished_events': finished_events})
+                                                      'finished_events': finished_events,
+                                                      'favorite_events': favorite_events,})
 
 @login_required
 def add_comment(request, event_id):
@@ -189,3 +218,13 @@ def organizer_profile(request, organizer_id):
     return render(request, 'events/organizer_profile.html', {'organizer': organizer,
                                                              'active_events': active_events,
                                                              'finished_events': finished_events})
+
+@login_required
+def toggle_favorite(request, event_id):
+    event = get_object_or_404(Event, pk=event_id)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, event=event)
+    if not created:
+        # Если объект уже существует, удаляем его
+        favorite.delete()
+    return redirect('event_detail', event_id=event.id)
+

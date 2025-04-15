@@ -15,6 +15,8 @@ urlpatterns = [
     path('my_account/', views.my_account, name='my_account'),
     path('event/<int:event_id>/add_comment/', views.add_comment, name='add_comment'),
     path('event/<int:event_id>/add_review/', views.add_review, name='add_review'),
-path('organizer/<int:organizer_id>/', views.organizer_profile, name='organizer_profile'),
+    path('organizer/<int:organizer_id>/', views.organizer_profile, name='organizer_profile'),
+    path('event/<int:event_id>/toggle_favorite/', views.toggle_favorite, name='toggle_favorite'),
+
 ]
 

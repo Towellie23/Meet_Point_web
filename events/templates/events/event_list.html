@@ -7,9 +7,9 @@
 
 <!-- Форма фильтрации (поиск, дата, место) -->
 <form method="get" class="form-inline mb-3">
-    <input type="text" name="search" class="form-control mr-2" placeholder="Поиск...">
-    <input type="date" name="date" class="form-control mr-2">
-    <input type="text" name="location" class="form-control mr-2" placeholder="Местоположение">
+    <input type="text" name="search" class="form-control mr-2" placeholder="Поиск..." value="{{ request.GET.search }}">
+    <input type="date" name="date" class="form-control mr-2" value="{{ request.GET.date }}">
+    <input type="text" name="location" class="form-control mr-2" placeholder="Местоположение" value="{{ request.GET.location }}">
     <div class="form-group mr-2">
         <label class="mr-2">Категории:</label>
         {% for category in categories %}
@@ -20,9 +20,7 @@
                     name="categories"
                     id="category_{{ category.id }}"
                     value="{{ category.id }}"
-                    {% if category.id|stringformat:"s" in selected_categories %}
-                        checked
-                    {% endif %}
+                    {% if category.id|stringformat:"s" in selected_categories %}checked{% endif %}
                 >
                 <label class="form-check-label" for="category_{{ category.id }}">{{ category.name }}</label>
             </div>
@@ -31,9 +29,9 @@
     <button type="submit" class="btn btn-primary">Применить</button>
 </form>
 
-{% if events %}
+{% if page_obj.object_list %}
     <ul class="list-group">
-        {% for event in events %}
+        {% for event in page_obj.object_list %}
         <li class="list-group-item">
             <a href="{% url 'event_detail' event.id %}">{{ event.title }}</a>
             <br>
@@ -44,4 +42,41 @@
 {% else %}
     <p>Мероприятия не найдены.</p>
 {% endif %}
+
+<!-- Блок пагинации -->
+<nav aria-label="Page navigation" class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">&laquo;</span>
+      </li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">&raquo;</span>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
 {% endblock %}
