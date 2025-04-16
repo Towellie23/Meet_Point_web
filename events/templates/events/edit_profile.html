@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Редактирование профиля</h1>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <h3>Личные данные</h3>
+    {% for field in user_form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {% render_field field class="form-control" %}
+        {% if field.errors %}
+          <div class="invalid-feedback d-block">
+            {{ field.errors|striptags }}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    
+    <h3>Информация профиля</h3>
+    {% for field in profile_form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {% render_field field class="form-control" %}
+        {% if field.errors %}
+          <div class="invalid-feedback d-block">
+            {{ field.errors|striptags }}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-success">Сохранить изменения</button>
+  </form>
+</div>
+{% endblock %}

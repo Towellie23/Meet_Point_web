@@ -76,6 +76,13 @@
 
     <hr>
     <h3>Участники</h3>
+    <p>
+        <strong>Участники:</strong> {{ participants|length }} из
+        {% if event.participant_limit %}{{ event.participant_limit }}
+        {% else %}
+        неограниченного
+        {% endif %}
+    </p>
     <ul class="list-group">
         {% for participation in participants %}
             <li class="list-group-item">{{ participation.user.username }}</li>

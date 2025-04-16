@@ -7,6 +7,26 @@
 
 <div class="container mt-4">
     <h1 class="mb-4">Личный кабинет пользователя {{ user.username }}</h1>
+    <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary">Редактировать профиль</a>
+
+    <!-- Блок с информацией о профиле -->
+    <div class="profile-info mb-4">
+        {% if user.first_name or user.last_name %}
+            <p><strong>Имя:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        {% endif %}
+        {% comment %}
+          Если используется поле avatar с заданным изображением по умолчанию (например, avatars/default.png),
+          можно проверять, чтобы отображать только, если пользователь загрузил свой аватар.
+        {% endcomment %}
+        {% if user.profile.avatar and user.profile.avatar.name != "avatars/default.png" %}
+            <div class="mb-3">
+                <img src="{{ user.profile.avatar.url }}" alt="Аватар пользователя {{ user.username }}" class="img-thumbnail" style="max-width: 150px;">
+            </div>
+        {% endif %}
+        {% if user.profile.bio %}
+            <p><strong>О себе:</strong> {{ user.profile.bio }}</p>
+        {% endif %}
+    </div>
 
     <!-- Блок вкладок -->
     <ul class="nav nav-tabs" id="myAccountTab" role="tablist">

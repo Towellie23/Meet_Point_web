@@ -69,17 +69,13 @@ class ReviewForm(forms.ModelForm):
         }
 
 
-class MessageForm(forms.ModelForm):
+class EditUserForm(forms.ModelForm):
     class Meta:
-        model = Message
-        fields = ['text']
-        widgets = {
-            'text': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3,
-                'placeholder': 'Введите ваше сообщение...'
-            })
-        }
-        labels = {
-            'text': ''
-        }
+        model = User
+        fields = ('first_name', 'last_name', 'email')
+
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('avatar', 'bio')

@@ -227,3 +227,28 @@ def toggle_favorite(request, event_id):
         # Если объект уже существует, удаляем его
         favorite.delete()
     return redirect('event_detail', event_id=event.id)
+
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    profile = get_object_or_404(Profile, user=user)
+
+    if request.method == "POST":
+        user_form = EditUserForm(request.POST, instance=user)
+        profile_form = EditProfileForm(request.POST, request.FILES, instance=profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, "Профиль успешно обновлен!")
+            return redirect('my_account')
+        else:
+            messages.error(request, "Исправьте, пожалуйста, ошибки в форме.")
+    else:
+        user_form = EditUserForm(instance=user)
+        profile_form = EditProfileForm(instance=profile)
+
+    return render(request, 'events/edit_profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form,
+    })
